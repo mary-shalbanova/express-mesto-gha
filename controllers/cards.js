@@ -25,7 +25,7 @@ const deleteCard = async (req, res) => {
     const card = await Card.findByIdAndRemove(req.params.cardId);
     if (card === null) {
       res.status(ERROR_CODE_NOT_FOUND).send({
-        message: 'Карточка с указанным _id не найдена',
+        message: 'Передан неcуществующий _id карточки',
       });
     } else {
       res.status(ERROR_CODE_OK).send({
@@ -73,16 +73,16 @@ const likeCard = async (req, res) => {
       { new: true },
     );
     if (card === null) {
-      res.status(ERROR_CODE_BAD_REQUEST).send({
-        message: 'Передан некорректный _id карточки',
+      res.status(ERROR_CODE_NOT_FOUND).send({
+        message: 'Передан неcуществующий _id карточки',
       });
     } else {
       res.status(ERROR_CODE_OK).send(card);
     }
   } catch (err) {
     if (err instanceof CastError) {
-      res.status(ERROR_CODE_NOT_FOUND).send({
-        message: 'Передан несуществующий _id карточки',
+      res.status(ERROR_CODE_BAD_REQUEST).send({
+        message: 'Передан некорректный _id карточки',
       });
       return;
     }
@@ -101,16 +101,16 @@ const dislikeCard = async (req, res) => {
       { new: true },
     );
     if (card === null) {
-      res.status(ERROR_CODE_BAD_REQUEST).send({
-        message: 'Передан некорректный _id карточки',
+      res.status(ERROR_CODE_NOT_FOUND).send({
+        message: 'Передан несуществующий _id карточки',
       });
     } else {
       res.status(ERROR_CODE_OK).send(card);
     }
   } catch (err) {
     if (err instanceof CastError) {
-      res.status(ERROR_CODE_NOT_FOUND).send({
-        message: 'Передан несуществующий _id карточки',
+      res.status(ERROR_CODE_BAD_REQUEST).send({
+        message: 'Передан некорректный _id карточки',
       });
       return;
     }
