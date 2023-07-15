@@ -23,12 +23,19 @@ const getAllUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    res.status(ERROR_CODE_OK).send(user);
-  } catch (err) {
-    if (err instanceof CastError) {
+    if (user === null) {
       res.status(ERROR_CODE_NOT_FOUND).send({
         message: 'Пользователь по указанному _id не найден',
       });
+    } else {
+      res.status(ERROR_CODE_OK).send(user);
+    }
+  } catch (err) {
+    if (err instanceof CastError) {
+      res.status(ERROR_CODE_BAD_REQUEST).send({
+        message: 'Передан некорректный _id пользователя',
+      });
+      return;
     }
 
     res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({
