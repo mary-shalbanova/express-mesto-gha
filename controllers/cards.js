@@ -22,14 +22,20 @@ const getAllCards = async (req, res) => {
 
 const deleteCard = async (req, res) => {
   try {
-    await Card.findByIdAndRemove(req.params.cardId);
-    res.status(ERROR_CODE_OK).send({
-      message: 'Карточка удалена',
-    });
+    const card = await Card.findByIdAndRemove(req.params.cardId);
+    if (card === null) {
+      res.status(ERROR_CODE_NOT_FOUND).send({
+        message: 'Карточка с указанным _id не найдена',
+      });
+    } else {
+      res.status(ERROR_CODE_OK).send({
+        message: 'Карточка удалена',
+      });
+    }
   } catch (err) {
     if (err instanceof CastError) {
       res.status(ERROR_CODE_BAD_REQUEST).send({
-        message: 'Карточка с указанным _id не найдена',
+        message: 'Передан некорректный _id карточки',
       });
       return;
     }
@@ -66,15 +72,14 @@ const likeCard = async (req, res) => {
       { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
       { new: true },
     );
-    res.status(ERROR_CODE_OK).send(card);
-  } catch (err) {
-    if (err instanceof ValidationError) {
+    if (card === null) {
       res.status(ERROR_CODE_BAD_REQUEST).send({
-        message: 'Переданы некорректные данные для постановки лайка',
+        message: 'Передан некорректный _id карточки',
       });
-      return;
+    } else {
+      res.status(ERROR_CODE_OK).send(card);
     }
-
+  } catch (err) {
     if (err instanceof CastError) {
       res.status(ERROR_CODE_NOT_FOUND).send({
         message: 'Передан несуществующий _id карточки',
@@ -95,15 +100,14 @@ const dislikeCard = async (req, res) => {
       { $pull: { likes: req.user._id } }, // убрать _id из массива
       { new: true },
     );
-    res.status(ERROR_CODE_OK).send(card);
-  } catch (err) {
-    if (err instanceof ValidationError) {
+    if (card === null) {
       res.status(ERROR_CODE_BAD_REQUEST).send({
-        message: 'Переданы некорректные данные для снятия лайка',
+        message: 'Передан некорректный _id карточки',
       });
-      return;
+    } else {
+      res.status(ERROR_CODE_OK).send(card);
     }
-
+  } catch (err) {
     if (err instanceof CastError) {
       res.status(ERROR_CODE_NOT_FOUND).send({
         message: 'Передан несуществующий _id карточки',
