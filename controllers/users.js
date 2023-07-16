@@ -63,24 +63,16 @@ const createUser = async (req, res) => {
   }
 };
 
-const updateUserInfo = async (req, res) => {
+const updateUser = async (data, req, res) => {
   try {
     const userId = req.user._id;
-    const { name, about } = req.body;
     const user = await User.findByIdAndUpdate(
       userId,
-      { name, about },
+      data,
       { new: true, runValidators: true },
     );
     res.status(ERROR_CODE_OK).send(user);
   } catch (err) {
-    if (err instanceof CastError) {
-      res.status(ERROR_CODE_NOT_FOUND).send({
-        message: 'Пользователь по указанному _id не найден',
-      });
-      return;
-    }
-
     if (err instanceof ValidationError) {
       res.status(ERROR_CODE_BAD_REQUEST).send({
         message: 'Переданы некорректные данные при создании пользователя',
@@ -88,41 +80,20 @@ const updateUserInfo = async (req, res) => {
       return;
     }
 
-    res.status(500).send({
+    res.status(ERROR_CODE_INTERNAL_SERVER_ERROR).send({
       message: 'На сервере произошла ошибка',
     });
   }
 };
 
-const updateAvatar = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const { avatar } = req.body;
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { avatar },
-      { new: true, runValidators: true },
-    );
-    res.status(ERROR_CODE_OK).send(user);
-  } catch (err) {
-    if (err instanceof CastError) {
-      res.status(ERROR_CODE_NOT_FOUND).send({
-        message: 'Пользователь по указанному _id не найден',
-      });
-      return;
-    }
+const updateUserInfo = (req, res) => {
+  const { name, about } = req.body;
+  updateUser({ name, about }, req, res);
+};
 
-    if (err instanceof ValidationError) {
-      res.status(ERROR_CODE_BAD_REQUEST).send({
-        message: 'Переданы некорректные данные при создании пользователя',
-      });
-      return;
-    }
-
-    res.status(500).send({
-      message: 'На сервере произошла ошибка',
-    });
-  }
+const updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+  updateUser({ avatar }, req, res);
 };
 
 module.exports = {
