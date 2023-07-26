@@ -54,14 +54,14 @@ const createUser = async (req, res, next) => {
       password,
     } = req.body;
     const hash = await bcrypt.hash(password, 10);
-    const user = await User.create({
+    await User.create({
       name,
       about,
       avatar,
       email,
       password: hash,
     });
-    res.status(STATUS_CODE_CREATED).send(user);
+    res.status(STATUS_CODE_CREATED).end();
   } catch (err) {
     if (err.code === 11000) {
       next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
@@ -117,7 +117,7 @@ const login = async (req, res, next) => {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
       })
-      .end();
+      .send({ _id: user._id });
   } catch (err) {
     next(err);
   }
