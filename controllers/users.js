@@ -61,7 +61,12 @@ const createUser = async (req, res, next) => {
       email,
       password: hash,
     });
-    res.status(STATUS_CODE_CREATED).end();
+    res.status(STATUS_CODE_CREATED).send({
+      name,
+      about,
+      avatar,
+      email,
+    });
   } catch (err) {
     if (err.code === 11000) {
       next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
