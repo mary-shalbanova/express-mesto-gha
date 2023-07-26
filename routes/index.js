@@ -1,14 +1,17 @@
 const routes = require('express').Router();
 const usersRoutes = require('./users');
 const cardsRoutes = require('./cards');
-const { ERROR_CODE_NOT_FOUND } = require('../utils/constants');
+const adminRoutes = require('./admin');
+const auth = require('../middlewares/auth');
+const hasToken = require('../middlewares/tokenValidation');
 
-routes.use('/users', usersRoutes);
-routes.use('/cards', cardsRoutes);
-routes.use('/*', (req, res) => {
-  res.status(ERROR_CODE_NOT_FOUND).send({
-    message: 'Страница не найдена',
-  });
+const NotFoundError = require('../errors/not-found-err');
+
+routes.use('/users', hasToken, auth, usersRoutes);
+routes.use('/cards', hasToken, auth, cardsRoutes);
+routes.use('/', adminRoutes);
+routes.use('/*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
 
 module.exports = routes;
