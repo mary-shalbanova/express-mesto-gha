@@ -34,6 +34,7 @@ const deleteCard = async (req, res, next) => {
   } catch (err) {
     if (err instanceof CastError) {
       next(new BadRequestError('Передан некорректный _id карточки'));
+      return;
     }
 
     next(err);
@@ -64,6 +65,7 @@ const likeCard = async (req, res, next) => {
   } catch (err) {
     if (err instanceof CastError) {
       next(new BadRequestError('Передан некорректный _id карточки'));
+      return;
     }
 
     next(err);
@@ -84,6 +86,7 @@ const dislikeCard = async (req, res, next) => {
   } catch (err) {
     if (err instanceof CastError) {
       next(new BadRequestError('Передан некорректный _id карточки'));
+      return;
     }
 
     next(err);

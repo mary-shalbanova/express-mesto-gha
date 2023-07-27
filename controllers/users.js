@@ -70,6 +70,7 @@ const createUser = async (req, res, next) => {
   } catch (err) {
     if (err.code === 11000) {
       next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+      return;
     }
 
     next(err);

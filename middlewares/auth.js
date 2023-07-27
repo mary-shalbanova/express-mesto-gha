@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { ERROR_CODE_UNAUTHORIZED } = require('../utils/constants');
+const UnauthorizedError = require('../errors/unauthorized-err');
 
 const auth = (req, res, next) => {
   const token = req.cookies.jwt;
@@ -7,7 +7,8 @@ const auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'secret-key');
   } catch (err) {
-    res.status(ERROR_CODE_UNAUTHORIZED).send({ message: 'Передан некорректный токен' });
+    next(new UnauthorizedError('Передан некорректный токен'));
+    return;
   }
   req.user = payload;
   next();

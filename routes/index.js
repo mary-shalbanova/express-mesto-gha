@@ -7,9 +7,13 @@ const hasToken = require('../middlewares/tokenValidation');
 
 const NotFoundError = require('../errors/not-found-err');
 
-routes.use('/users', hasToken, auth, usersRoutes);
-routes.use('/cards', hasToken, auth, cardsRoutes);
 routes.use('/', adminRoutes);
+
+routes.use(hasToken);
+routes.use(auth);
+routes.use('/users', usersRoutes);
+routes.use('/cards', cardsRoutes);
+
 routes.use('/*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
